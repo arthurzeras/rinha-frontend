@@ -1,8 +1,8 @@
 <template>
   <div class="json-tree-item">
     <span class="json-tree-item__title" :class="{ 'json-tree-item__array-index': isTitleANumber }">
-      <span>{{ title }}:&nbsp;</span>
-      <span class="json-tree-item__bracket" v-if="isContentAnArray">[</span>
+      <span>{{ title }}&colon;&nbsp;</span>
+      <span class="json-tree-item__bracket" v-if="isContentAnArray">&lsqb;</span>
     </span>
 
     <span v-if="isTitleANumber || isContentAnArray" class="json-tree-item__left-bar"
@@ -13,12 +13,12 @@
     </div>
 
     <span v-else>
-      <span v-if="primitiveContentType === 'string'">"</span>
+      <span v-if="primitiveContentType === 'string'">&quot;</span>
       <span :class="contentTypeClassName">{{ content === null ? "null" : content }}</span>
-      <span v-if="primitiveContentType === 'string'">"</span>
+      <span v-if="primitiveContentType === 'string'">&quot;</span>
     </span>
 
-    <span class="json-tree-item__bracket" v-if="isContentAnArray">]</span>
+    <span class="json-tree-item__bracket" v-if="isContentAnArray">&rsqb;</span>
   </div>
 </template>
 
