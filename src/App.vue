@@ -1,11 +1,12 @@
 <template>
   <home-page @file-read="handleFileRead" v-if="!hasContent" />
-  <div v-else>{{ fileContent }}</div>
+  <json-tree :content="fileContent" :name="fileName" v-else />
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import HomePage from './components/HomePage.vue';
+import JsonTree from './components/JsonTree.vue';
 
 const fileContent = ref("")
 const fileName = ref("")
