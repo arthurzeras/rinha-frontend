@@ -4,11 +4,27 @@
 
     <div class="json-tree__scroll-container" ref="treeContainer">
       <div class="json-tree__content" :style="{ height: `${totalHeight}px` }">
-        <div v-for="(line, i) in visibleLines" :key="i" class="json-tree__line"
-          :style="{ marginLeft: `${line.tabSize}rem`, transform: `translateY(${offsetY}px)` }">
-          <span class="json-tree__line-item" :class="`json-tree__line-key--${line.key.type}`">{{ line.key.text }}</span>
-          <span class="json-tree__line-item" :class="`json-tree__line-value--${line.value.type}`">{{ line.value.text
-          }}</span>
+        <div
+          v-for="(line, i) in visibleLines"
+          :key="i"
+          class="json-tree__line"
+          :style="{
+            marginLeft: `${line.tabSize}rem`,
+            transform: `translateY(${offsetY}px)`,
+          }"
+        >
+          <span
+            class="json-tree__line-item"
+            :class="`json-tree__line-key--${line.key.type}`"
+          >
+            {{ line.key.text }}
+          </span>
+          <span
+            class="json-tree__line-item"
+            :class="`json-tree__line-value--${line.value.type}`"
+          >
+            {{ line.value.text }}
+          </span>
         </div>
       </div>
     </div>
@@ -18,51 +34,60 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
-const LINE_HEIGHT = 25
+const LINE_HEIGHT = 25;
 
 // Subtracts the padding from json-tree class and the h1 element
-const CONTAINER_HEIGHT = window.innerHeight - 65 - 15
+const CONTAINER_HEIGHT = window.innerHeight - 65 - 15;
 
-type LineItemTypes = 'string' | 'null' | 'boolean' | 'number' | 'list-bracket'
+type LineItemTypes = 'string' | 'null' | 'boolean' | 'number' | 'list-bracket';
 
 type Line = {
-  tabSize: number,
-  key: { text: string, type: LineItemTypes },
-  value: { text: string, type: LineItemTypes },
-}
-
+  tabSize: number;
+  key: { text: string; type: LineItemTypes };
+  value: { text: string; type: LineItemTypes };
+};
 
 const props = defineProps<{
-  name: string,
-  content: string
-}>()
+  name: string;
+  content: string;
+}>();
 
-const treeContainer = ref<HTMLTableSectionElement | null>()
-const containerScrollTop = ref(0)
+const treeContainer = ref<HTMLTableSectionElement | null>();
+const containerScrollTop = ref(0);
 
 onMounted(() => {
   if (treeContainer.value) {
     treeContainer.value.addEventListener('scroll', (event) => {
-      const target = event.target as HTMLTableSectionElement
-      containerScrollTop.value = target.scrollTop
-    })
+      const target = event.target as HTMLTableSectionElement;
+      containerScrollTop.value = target.scrollTop;
+    });
   }
-})
+});
 
-const totalHeight = computed(() => lines.length * LINE_HEIGHT)
-const startItem = computed(() => Math.floor(containerScrollTop.value / LINE_HEIGHT))
-const endItem = computed(() => Math.ceil(CONTAINER_HEIGHT / LINE_HEIGHT) + startItem.value)
-const visibleLines = computed(() => lines.slice(startItem.value, endItem.value))
-const offsetY = computed(() => startItem.value * LINE_HEIGHT)
+const totalHeight = computed(() => lines.length * LINE_HEIGHT);
+const startItem = computed(() =>
+  Math.floor(containerScrollTop.value / LINE_HEIGHT),
+);
+const endItem = computed(
+  () => Math.ceil(CONTAINER_HEIGHT / LINE_HEIGHT) + startItem.value,
+);
+const visibleLines = computed(() =>
+  lines.slice(startItem.value, endItem.value),
+);
+const offsetY = computed(() => startItem.value * LINE_HEIGHT);
 
-const formatItemTypeOutput = (key: string | number, value: any, mountTreeIterations: number): Line[] => {
+const formatItemTypeOutput = (
+  key: string | number,
+  value: any,
+  mountTreeIterations: number,
+): Line[] => {
   if (typeof value === 'string') {
     return [
       {
         tabSize: mountTreeIterations,
         key: { text: `${key}: `, type: typeof key as 'string' | 'number' },
         value: { text: `"${value}"`, type: 'string' },
-      }
+      },
     ];
   }
 
@@ -71,8 +96,8 @@ const formatItemTypeOutput = (key: string | number, value: any, mountTreeIterati
       {
         tabSize: mountTreeIterations,
         key: { text: `${key}: `, type: 'string' },
-        value: { text: `${value}`, type: typeof value as 'boolean' | 'number' }
-      }
+        value: { text: `${value}`, type: typeof value as 'boolean' | 'number' },
+      },
     ];
   }
 
@@ -81,9 +106,9 @@ const formatItemTypeOutput = (key: string | number, value: any, mountTreeIterati
       {
         tabSize: mountTreeIterations,
         key: { text: `${key}: `, type: 'string' },
-        value: { text: `null`, type: 'null' }
-      }
-    ]
+        value: { text: `null`, type: 'null' },
+      },
+    ];
   }
 
   if (Array.isArray(value)) {
@@ -97,38 +122,42 @@ const formatItemTypeOutput = (key: string | number, value: any, mountTreeIterati
       {
         tabSize: mountTreeIterations,
         key: { text: ']', type: 'list-bracket' },
-        value: { text: '', type: 'list-bracket' }
+        value: { text: '', type: 'list-bracket' },
       },
-    ]
+    ];
   }
 
   return [
     {
       tabSize: mountTreeIterations,
       key: { text: `${key}:`, type: typeof key as 'number' | 'string' },
-      value: { text: '', type: 'string' }
+      value: { text: '', type: 'string' },
     },
-    ...mountTree(value, mountTreeIterations + 1)
-  ]
-}
+    ...mountTree(value, mountTreeIterations + 1),
+  ];
+};
 
-const mountTree = (content: any, iterations = 0, allLines: Line[] = []): Array<Line> => {
+const mountTree = (
+  content: any,
+  iterations = 0,
+  allLines: Line[] = [],
+): Array<Line> => {
   if (Array.isArray(content)) {
     for (const index in content) {
-      allLines.push(...formatItemTypeOutput(index, content[index], iterations))
+      allLines.push(...formatItemTypeOutput(index, content[index], iterations));
     }
 
     return allLines;
   }
 
   for (const key of Object.keys(content)) {
-    allLines.push(...formatItemTypeOutput(key, content[key], iterations))
+    allLines.push(...formatItemTypeOutput(key, content[key], iterations));
   }
 
-  return allLines
-}
+  return allLines;
+};
 
-const lines = mountTree(JSON.parse(props.content))
+const lines = mountTree(JSON.parse(props.content));
 </script>
 
 <style>
@@ -157,7 +186,7 @@ const lines = mountTree(JSON.parse(props.content))
 .json-tree__content {
   width: 50%;
   margin: 0 auto;
-  font-family: "JetBrains Mono", monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .json-tree__line {

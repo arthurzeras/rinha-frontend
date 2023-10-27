@@ -6,7 +6,11 @@
         Simple JSON Viewer that runs completely on-client. No data exchange
       </h2>
       <div class="home-page__card">
-        <button class="home-page__button" type="button" @click="openFileSelector">
+        <button
+          class="home-page__button"
+          type="button"
+          @click="openFileSelector"
+        >
           Load JSON
         </button>
         <input type="file" hidden ref="inputFile" @change="handleFileChange" />
@@ -16,38 +20,38 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 const emit = defineEmits<{
-  (event: 'fileRead', result: { content: string, name: string }): void
-}>()
+  (event: 'fileRead', result: { content: string; name: string }): void;
+}>();
 
-const inputFile = ref<HTMLInputElement | null>(null)
+const inputFile = ref<HTMLInputElement | null>(null);
 
 const openFileSelector = () => {
-  inputFile.value?.click()
-}
+  inputFile.value?.click();
+};
 
 const handleFileChange = (event: Event) => {
   const files = (event.target as HTMLInputElement)?.files;
 
   if (!files?.length) {
-    return
+    return;
   }
 
   const file = files[0];
 
-  const fileReader = new FileReader()
+  const fileReader = new FileReader();
 
   fileReader.addEventListener('load', (event) => {
     emit('fileRead', {
       name: file.name,
       content: event.target?.result as string,
-    })
-  })
+    });
+  });
 
-  fileReader.readAsText(file)
-}
+  fileReader.readAsText(file);
+};
 </script>
 
 <style>
