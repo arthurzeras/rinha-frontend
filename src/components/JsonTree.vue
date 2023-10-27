@@ -55,15 +55,9 @@ const endItem = computed(() => Math.ceil(CONTAINER_HEIGHT / LINE_HEIGHT) + start
 const visibleLines = computed(() => lines.slice(startItem.value, endItem.value))
 const offsetY = computed(() => startItem.value * LINE_HEIGHT)
 
-const formatItemTypeOutput = (
-  allLines: Line[],
-  key: string | number,
-  value: any,
-  mountTreeIterations: number
-): Line[] => {
+const formatItemTypeOutput = (key: string | number, value: any, mountTreeIterations: number): Line[] => {
   if (typeof value === 'string') {
     return [
-      ...allLines,
       {
         tabSize: mountTreeIterations,
         key: { text: `${key}: `, type: typeof key as 'string' | 'number' },
@@ -74,7 +68,6 @@ const formatItemTypeOutput = (
 
   if (['boolean', 'number'].includes(typeof value)) {
     return [
-      ...allLines,
       {
         tabSize: mountTreeIterations,
         key: { text: `${key}: `, type: 'string' },
@@ -85,7 +78,6 @@ const formatItemTypeOutput = (
 
   if (value === null) {
     return [
-      ...allLines,
       {
         tabSize: mountTreeIterations,
         key: { text: `${key}: `, type: 'string' },
@@ -96,7 +88,6 @@ const formatItemTypeOutput = (
 
   if (Array.isArray(value)) {
     return [
-      ...allLines,
       {
         tabSize: mountTreeIterations,
         key: { text: `${key}: `, type: 'string' },
@@ -112,7 +103,6 @@ const formatItemTypeOutput = (
   }
 
   return [
-    ...allLines,
     {
       tabSize: mountTreeIterations,
       key: { text: `${key}:`, type: typeof key as 'number' | 'string' },
@@ -122,17 +112,20 @@ const formatItemTypeOutput = (
   ]
 }
 
-const mountTree = (content: any, iterations = 0): Array<Line> => {
+const mountTree = (content: any, iterations = 0, allLines: Line[] = []): Array<Line> => {
   if (Array.isArray(content)) {
-    return content.reduce((allLines: Line[], item, index) => (
-      formatItemTypeOutput(allLines, index, item, iterations)
-    ), [])
+    for (const index in content) {
+      allLines.push(...formatItemTypeOutput(index, content[index], iterations))
+    }
+
+    return allLines;
   }
 
-  return Object.keys(content).reduce((allLines: Line[], key) => {
-    const item = content[key];
-    return formatItemTypeOutput(allLines, key, item, iterations);
-  }, [])
+  for (const key of Object.keys(content)) {
+    allLines.push(...formatItemTypeOutput(key, content[key], iterations))
+  }
+
+  return allLines
 }
 
 const lines = mountTree(JSON.parse(props.content))
