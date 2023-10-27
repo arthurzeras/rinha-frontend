@@ -2,6 +2,10 @@
   <section class="json-tree">
     <h1 class="json-tree__title">{{ name }}</h1>
 
+    <button class="json-tree__back button" @click="$emit('back')">
+      Load new JSON
+    </button>
+
     <div class="json-tree__scroll-container" ref="treeContainer">
       <div class="json-tree__content" :style="{ height: `${totalHeight}px` }">
         <div
@@ -33,6 +37,10 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+
+defineEmits<{
+  (event: 'back'): void;
+}>();
 
 const LINE_HEIGHT = 25;
 
@@ -175,6 +183,12 @@ const lines = mountTree(JSON.parse(props.content));
   font-size: 25px;
   padding: 15px 0;
   line-height: 35px;
+}
+
+.json-tree__back {
+  top: 15px;
+  right: 15px;
+  position: absolute;
 }
 
 .json-tree__scroll-container {

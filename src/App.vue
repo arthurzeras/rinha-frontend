@@ -1,6 +1,11 @@
 <template>
   <home-page @file-read="handleFileRead" v-if="!hasContent" />
-  <json-tree :content="fileContent" :name="fileName" v-else />
+  <json-tree
+    v-else
+    :name="fileName"
+    @back="handleBack"
+    :content="fileContent"
+  />
   <div class="invalid-json-alert" v-if="hasError">
     <span class="invalid-json-alert__content" @click="hasError = false">
       JSON invalid, please load a valid JSON
@@ -17,6 +22,11 @@ const fileName = ref('');
 const hasError = ref(false);
 const fileContent = ref('');
 const hasContent = computed(() => !!fileContent.value.length);
+
+const handleBack = () => {
+  fileName.value = '';
+  fileContent.value = '';
+};
 
 const handleFileRead = (fileInfo: { content: string; name: string }) => {
   hasError.value = false;

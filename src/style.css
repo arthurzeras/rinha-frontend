@@ -11,3 +11,24 @@
 body {
   margin: 0;
 }
+
+.button {
+  font-size: 1em;
+  line-height: 1;
+  cursor: pointer;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0.6em 1.2em;
+  font-family: inherit;
+  border: 1px solid #222;
+  transition: background-color 0.25s;
+}
+
+.button:hover {
+  background-color: #999;
+}
+
+.button:focus,
+.button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
