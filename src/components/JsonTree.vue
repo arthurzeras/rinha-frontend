@@ -49,11 +49,10 @@ onMounted(() => {
   }
 })
 
-const lines = computed(() => mountTree(JSON.parse(props.content)))
-const totalHeight = computed(() => lines.value.length * LINE_HEIGHT)
+const totalHeight = computed(() => lines.length * LINE_HEIGHT)
 const startItem = computed(() => Math.floor(containerScrollTop.value / LINE_HEIGHT))
 const endItem = computed(() => Math.ceil(CONTAINER_HEIGHT / LINE_HEIGHT) + startItem.value)
-const visibleLines = computed(() => lines.value.slice(startItem.value, endItem.value))
+const visibleLines = computed(() => lines.slice(startItem.value, endItem.value))
 const offsetY = computed(() => startItem.value * LINE_HEIGHT)
 
 const formatItemTypeOutput = (
@@ -135,6 +134,8 @@ const mountTree = (content: any, iterations = 0): Array<Line> => {
     return formatItemTypeOutput(allLines, key, item, iterations);
   }, [])
 }
+
+const lines = mountTree(JSON.parse(props.content))
 </script>
 
 <style>
